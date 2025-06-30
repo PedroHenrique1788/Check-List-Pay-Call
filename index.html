@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Checklist de Atendimento - Pay - chat</title>
+  <title>Checklist de Atendimento - Pay</title>
   <style>
     * {
       margin: 0;
@@ -531,7 +531,7 @@
       const alertElement = document.getElementById(type + 'Alert');
       alertElement.style.display = show ? 'block' : 'none';
     }
-
+    const endpoint = 'https://script.google.com/macros/s/AKfycbxuOa0toU5tsnJKwy4em95ixPNKnqKyxN5bA5szBLQI_d7rMj3WnTuZv3SdK1gRxUFu/exec';
     function enviarChecklist() {
       const analista = document.getElementById('analista').value.trim();
       const ticket = document.getElementById('ticket').value.trim();
@@ -573,38 +573,19 @@
         percentual: Math.round((checkedCount / checklistItems.length) * 100)
       };
 
-      fetch("https://script.google.com/macros/s/AKfycby8HlnKk444Fn9CEqRveQnL8oRpoWE1LN9Jf-2fsxv883fLLMhz3yCaZu-F2m_yMmw_/exec", {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: { "Content-Type": "application/json" }
-      })
-      .then(res => res.json())
-      .then(data => {
-        showLoading(false);
-        
-        if (data.status === 'success' || data.status === 'sucesso') {
-          showAlert('success');
-          setTimeout(() => {
-            limparChecklist();
-            document.getElementById('analista').value = '';
-            document.getElementById('ticket').value = '';
-          }, 2000);
-        } else {
-          showAlert('error');
-          console.error('Erro do servidor:', data.message);
-        }
-      })
-      .catch(error => {
-        showLoading(false);
-        showAlert('error');
-        console.error('Erro de conexão:', error);
-      })
-      .finally(() => {
-        // Reabilitar botão
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '📤 Enviar Checklist';
+
+      
+      fetch(endpoint, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dados)
       });
+      alert("✅ Enviado para a planilha com sucesso!");
     }
+    
 
     // Inicializar progresso
     updateProgress();
