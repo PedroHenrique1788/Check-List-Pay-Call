@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Checklist de Atendimento - Pay</title>
+  <title>Checklist de Atendimento - Pay - Chat</title>
   <style>
     body {
       font-family: Poppins, sans-serif;
@@ -16,6 +16,26 @@
       text-align: center;
       color: #E0E7FF;
       margin-bottom: 20px;
+    }
+
+    .formulario {
+      max-width: 700px;
+      margin: auto;
+      margin-bottom: 20px;
+    }
+
+    .formulario label {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .formulario input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
     }
 
     .progress-container {
@@ -81,14 +101,27 @@
 
   <h1>Checklist Pay - Chat</h1>
 
+  <!-- Formulário com dados do analista -->
+  <div class="formulario">
+    <label>
+      Re:
+      <input type="text" id="inputAnalista" placeholder="Digite seu RE" required>
+    </label>
+    <label>
+      Ticket de Atendimento:
+      <input type="text" id="inputTicket" placeholder="Digite o número do ticket" required>
+    </label>
+  </div>
+
+  <!-- Barra de progresso -->
   <div class="progress-container">
     <div class="progress-bar" id="progressBar">0%</div>
   </div>
 
-  <div class="checklist" id="checklist">
-    <!-- Itens serão inseridos via JavaScript -->
-  </div>
+  <!-- Checklist -->
+  <div class="checklist" id="checklist"></div>
 
+  <!-- Botões -->
   <div class="button-container">
     <button onclick="clearChecklist()">Limpar Checklist</button>
     <button onclick="enviarChecklist()">Enviar Checklist</button>
@@ -118,6 +151,7 @@
     const checklistContainer = document.getElementById('checklist');
     const progressBar = document.getElementById('progressBar');
 
+    // Renderizar os itens do checklist
     items.forEach((item, index) => {
       const div = document.createElement('div');
       div.className = 'item';
@@ -155,11 +189,11 @@
         respostas.push(document.getElementById('check' + i).checked);
       }
 
-      const analista = prompt("Digite seu nome ou ID:");
-      const ticket = prompt("Digite o número do ticket de atendimento:");
+      const analista = document.getElementById('inputAnalista').value.trim();
+      const ticket = document.getElementById('inputTicket').value.trim();
 
       if (!analista || !ticket) {
-        alert("Por favor, preencha o nome e o número do ticket.");
+        alert("Por favor, preencha todos os campos do formulário.");
         return;
       }
 
@@ -169,7 +203,7 @@
         respostas: respostas
       };
 
-      fetch("https://script.google.com/macros/s/SEU_WEBAPP_URL/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbztKZ8Oy4yvD9sPT9FotKoaqQ8deomHu_c7S1aRPXdvtCnU-p0yD1E0NAKTE5MCRgpm/exec", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
