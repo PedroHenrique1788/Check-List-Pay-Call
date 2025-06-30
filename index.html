@@ -510,6 +510,7 @@
     }
 
     function limparChecklist() {
+      // Limpar os checkboxes e estilos visuais
       const checkboxes = document.querySelectorAll('input[type="checkbox"]');
       checkboxes.forEach(checkbox => {
         checkbox.checked = false;
@@ -517,9 +518,17 @@
         item.classList.remove('checked');
       });
     
-      updateProgress(); // Atualiza contadores e o círculo
-      hideAlerts();     // Esconde mensagens de status
+      // Limpar os campos de texto
+      const textInputs = document.querySelectorAll('input[type="text"]');
+      textInputs.forEach(input => {
+        input.value = '';
+      });
+    
+      // Atualizar progresso e esconder alertas
+      updateProgress();
+      hideAlerts();
     }
+
 
     function hideAlerts() {
       document.getElementById('successAlert').style.display = 'none';
