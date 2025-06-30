@@ -510,12 +510,15 @@
     }
 
     function limparChecklist() {
-      checklistItems.forEach((_, index) => {
-        const checkbox = document.getElementById(`check${index}`);
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      checkboxes.forEach(checkbox => {
         checkbox.checked = false;
+        const item = checkbox.closest('.checklist-item');
+        item.classList.remove('checked');
       });
-      updateProgress();
-      hideAlerts();
+    
+      updateProgress(); // Atualiza contadores e o círculo
+      hideAlerts();     // Esconde mensagens de status
     }
 
     function hideAlerts() {
