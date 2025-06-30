@@ -2,225 +2,625 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Checklist de Atendimento - Pay</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checklist de Atendimento - Pay - chat</title>
   <style>
-    body {
-      font-family: Poppins, sans-serif;
+    * {
       margin: 0;
-      padding: 30px;
-      background-color: #1E3A8A;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1E3A8A 0%, #3730A3 50%, #1E40AF 100%);
+      min-height: 100vh;
       color: #fff;
+      padding: 20px;
     }
 
-    h1 {
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .header {
       text-align: center;
+      margin-bottom: 40px;
+      padding: 30px 0;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
       color: #E0E7FF;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      font-weight: 600;
     }
 
-    .formulario {
-      max-width: 700px;
-      margin: auto;
-      margin-bottom: 20px;
+    .header p {
+      font-size: 1.1em;
+      opacity: 0.9;
+      color: #C7D2FE;
     }
 
-    .formulario label {
+    .form-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      color: #1f2937;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-group label {
       display: block;
-      margin-bottom: 10px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #374151;
+      font-size: 1.1em;
     }
 
-    .formulario input {
+    .form-group input {
       width: 100%;
-      padding: 8px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      border: none;
+      padding: 15px 20px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
       font-size: 16px;
+      transition: all 0.3s ease;
+      background: #f9fafb;
     }
 
-    .progress-container {
-      width: 100%;
-      background-color: #ccc;
+    .form-group input:focus {
+      outline: none;
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      background: white;
+    }
+
+    .checklist-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
       border-radius: 20px;
-      margin: 0 auto 30px auto;
-      max-width: 700px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      color: #1f2937;
     }
 
-    .progress-bar {
-      height: 24px;
-      width: 0;
-      background-color: #60A5FA;
-      text-align: center;
+    .checklist-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .checklist-title {
+      font-size: 1.5em;
+      font-weight: 600;
+      color: #1E3A8A;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .progress-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: #f8fafc;
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: 2px solid #e2e8f0;
+    }
+
+    .progress-circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: conic-gradient(#10b981 0deg, #e5e7eb 0deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: #1f2937;
+      position: relative;
+    }
+
+    .progress-circle::before {
+      content: '';
+      position: absolute;
+      width: 35px;
+      height: 35px;
+      background: white;
+      border-radius: 50%;
+      z-index: 1;
+    }
+
+    .progress-text {
+      position: relative;
+      z-index: 2;
+      font-size: 0.9em;
+    }
+
+    .progress-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .progress-stats span {
+      font-size: 0.9em;
+      color: #6b7280;
+    }
+
+    .progress-stats .number {
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .checklist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .checklist-item {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 18px 20px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .checklist-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: #e2e8f0;
+      transition: all 0.3s ease;
+    }
+
+    .checklist-item:hover {
+      background: #e0f2fe;
+      border-color: #3B82F6;
+      transform: translateX(5px);
+    }
+
+    .checklist-item:hover::before {
+      background: #3B82F6;
+    }
+
+    .checklist-item.checked {
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+      border-color: #10b981;
+      color: #065f46;
+    }
+
+    .checklist-item.checked::before {
+      background: #10b981;
+    }
+
+    .checklist-item.checked::after {
+      content: '✓';
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #10b981;
       color: white;
-      line-height: 24px;
-      border-radius: 20px;
-      transition: width 0.3s;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 16px;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
     }
 
-    .checklist {
-      max-width: 700px;
-      margin: auto;
+    .checklist-item label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
+      margin: 0;
+      line-height: 1.5;
     }
 
-    .item {
-      background: #fff;
-      padding: 12px;
-      margin-bottom: 10px;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      color: #333;
-    }
-
-    input[type="checkbox"] {
-      transform: scale(1.2);
-      margin-right: 10px;
+    .checklist-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: #3B82F6;
+      margin: 0;
+      flex-shrink: 0;
+      margin-top: 2px;
     }
 
     .button-container {
-      text-align: center;
-      margin-top: 20px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 30px;
     }
 
     button {
-      background-color: #60A5FA;
-      color: white;
+      padding: 15px 30px;
       border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
+      border-radius: 12px;
       font-size: 16px;
+      font-weight: 600;
       cursor: pointer;
-      margin: 5px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 160px;
+      justify-content: center;
     }
 
-    button:hover {
-      background-color: #3B82F6;
+    .btn-submit {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+    }
+
+    .btn-submit:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-submit:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-clear {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+    }
+
+    .btn-clear:hover {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+    }
+
+    .alert {
+      padding: 15px 20px;
+      border-radius: 12px;
+      margin-top: 20px;
+      display: none;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .alert.success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 2px solid #10b981;
+    }
+
+    .alert.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 2px solid #ef4444;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+      color: #6b7280;
+    }
+
+    .loading::after {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #e5e7eb;
+      border-top: 3px solid #3B82F6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 10px;
+      }
+      
+      .form-section, .checklist-section {
+        padding: 20px;
+      }
+      
+      .checklist-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .checklist-header {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .button-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      button {
+        width: 100%;
+        max-width: 300px;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <div class="header">
+      <h1>💬 Checklist Pay - Chat</h1>
+      <p>Sistema de verificação para atendimento ao cliente</p>
+    </div>
 
-  <h1>Checklist Pay - Chat</h1>
+    <div class="form-section">
+      <div class="form-group">
+        <label for="analista">👤 Nome do Analista:</label>
+        <input type="text" id="analista" placeholder="Digite seu nome completo">
+      </div>
 
-  <!-- Formulário com dados do analista -->
-  <div class="formulario">
-    <label>
-      Re:
-      <input type="text" id="inputAnalista" placeholder="Digite seu RE" required>
-    </label>
-    <label>
-      Ticket de Atendimento:
-      <input type="text" id="inputTicket" placeholder="Digite o número do ticket" required>
-    </label>
-  </div>
+      <div class="form-group">
+        <label for="ticket">🎫 Ticket de Atendimento:</label>
+        <input type="text" id="ticket" placeholder="Digite o número do ticket">
+      </div>
+    </div>
 
-  <!-- Barra de progresso -->
-  <div class="progress-container">
-    <div class="progress-bar" id="progressBar">0%</div>
-  </div>
+    <div class="checklist-section">
+      <div class="checklist-header">
+        <div class="checklist-title">
+          📋 Checklist de Atendimento
+        </div>
+        <div class="progress-info">
+          <div class="progress-circle" id="progressCircle">
+            <span class="progress-text" id="progressText">0%</span>
+          </div>
+          <div class="progress-stats">
+            <span>Concluído: <span class="number" id="completedCount">0</span> de <span class="number" id="totalCount">17</span></span>
+            <span>Restam: <span class="number" id="remainingCount">17</span> itens</span>
+          </div>
+        </div>
+      </div>
 
-  <!-- Checklist -->
-  <div class="checklist" id="checklist"></div>
+      <div class="checklist-grid" id="checklist"></div>
 
-  <!-- Botões -->
-  <div class="button-container">
-    <button onclick="clearChecklist()">Limpar Checklist</button>
-    <button onclick="enviarChecklist()">Enviar Checklist</button>
+      <div class="button-container">
+        <button class="btn-submit" onclick="enviarChecklist()">
+          📤 Enviar Checklist
+        </button>
+        <button class="btn-clear" onclick="limparChecklist()">
+          🗑️ Limpar Tudo
+        </button>
+      </div>
+
+      <div class="loading" id="loading">Enviando checklist...</div>
+      <div class="alert success" id="successAlert">✅ Checklist enviado com sucesso!</div>
+      <div class="alert error" id="errorAlert">❌ Erro ao enviar checklist. Tente novamente.</div>
+    </div>
   </div>
 
   <script>
-    const items = [
+    const checklistItems = [
       "Atender o cliente em até 20 segundos",
       "Dar boas vindas ao cliente usando mensagem padrão",
-      "Analise dos registros anteriores para identificar se cliente já fez sua solicitação",
-      "Realizar a confirmação positiva avaliando o histórico da interação: caso as informações já tenham sido fornecidas ao Bot ou em outras jornadas, não solicitar novamente. Se não houver registro, solicitar os 3 primeiros dígitos do CPF e o nome completo do cliente.",
-      "Identificar e analisar o cadastro do cliente",
-      "Confirme o endereço do imóvel sobre o qual o cliente quer falar",
-      "Retorne com o cliente de tempos em tempos para manter a atualização, ficando sem retornar no máximo até 2 minutos",
-      "Nos casos em que a solicitação do cliente puder ser atendida via app ou site QuintoAndar, direcionar o cliente ao APP ou site e orientá-lo com base no processo",
-      "Identificada a necessidade de transferência para outra jornada, utilize a calculadora disponibilizada na Base de Conhecimento",
-      "Realize o tagueamento para 100% dos contatos",
-      "Ao retornar para o cliente, agradeça por ter aguardado e recapitule o atendimento",
-      "Demonstre cordialidade e interesse em atender o cliente, realizando o procedimento corretamente",
-      "Nos casos de negociação de boleto, é necessário garantir que o atendimento seja realizado diretamente, sem encaminhamento para a parceira, exceto nas situações previstas em processo, como nas filas onde há orientação formal para envio à assessoria",
-      "Se atente nas escolhas das palavras ao digitar buscando garantir um atendimento humano e acolhedor",
-      "Garanta o registro no CRM de 100% dos contatos",
-      "Ao final da tratativa, realize um breve resumo dos pontos tratados na ligação e questione se o cliente possui alguma dúvida e se pode ajudar em algo mais.",
-      "Oferte a pesquisa em 100% dos atendimentos"
+      "Análise dos registros anteriores",
+      "Confirmação positiva do histórico",
+      "Analisar o cadastro do cliente",
+      "Confirmar endereço do imóvel",
+      "Retornar ao cliente em até 2 minutos",
+      "Direcionar cliente ao App ou Site quando aplicável",
+      "Usar a calculadora da base de conhecimento",
+      "Taguear 100% dos contatos",
+      "Agradecer e recapitular atendimento",
+      "Demonstrar cordialidade e procedimento correto",
+      "Atuar em boleto conforme processo",
+      "Escolher palavras com acolhimento humano",
+      "Registrar no CRM 100% dos contatos",
+      "Resumir atendimento e verificar dúvidas",
+      "Oferecer pesquisa em 100% dos atendimentos"
     ];
 
     const checklistContainer = document.getElementById('checklist');
-    const progressBar = document.getElementById('progressBar');
 
-    // Renderizar os itens do checklist
-    items.forEach((item, index) => {
+    // Criar itens do checklist
+    checklistItems.forEach((item, index) => {
       const div = document.createElement('div');
-      div.className = 'item';
+      div.className = 'checklist-item';
       div.innerHTML = `
         <label>
-          <input type="checkbox" onchange="updateProgress()" id="check${index}"> ${item}
+          <input type="checkbox" id="check${index}" onchange="updateProgress()">
+          <span>${item}</span>
         </label>
       `;
+      
+      // Adicionar evento de clique no div
+      div.addEventListener('click', function(e) {
+        if (e.target.type !== 'checkbox') {
+          const checkbox = this.querySelector('input[type="checkbox"]');
+          checkbox.checked = !checkbox.checked;
+          updateProgress();
+          updateItemStyle(this, checkbox.checked);
+        }
+      });
+      
       checklistContainer.appendChild(div);
     });
 
-    function updateProgress() {
-      const total = items.length;
-      let checked = 0;
-      for (let i = 0; i < total; i++) {
-        if (document.getElementById('check' + i).checked) {
-          checked++;
-        }
+    function updateItemStyle(item, checked) {
+      if (checked) {
+        item.classList.add('checked');
+      } else {
+        item.classList.remove('checked');
       }
-      const percent = Math.round((checked / total) * 100);
-      progressBar.style.width = percent + '%';
-      progressBar.textContent = percent + '%';
     }
 
-    function clearChecklist() {
-      for (let i = 0; i < items.length; i++) {
-        document.getElementById('check' + i).checked = false;
-      }
+    function updateProgress() {
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      const checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
+      const totalCount = checkboxes.length;
+      const percentage = Math.round((checkedCount / totalCount) * 100);
+
+      // Atualizar elementos visuais
+      document.getElementById('progressText').textContent = percentage + '%';
+      document.getElementById('completedCount').textContent = checkedCount;
+      document.getElementById('remainingCount').textContent = totalCount - checkedCount;
+
+      // Atualizar círculo de progresso
+      const progressCircle = document.getElementById('progressCircle');
+      const degrees = (checkedCount / totalCount) * 360;
+      progressCircle.style.background = `conic-gradient(#10b981 ${degrees}deg, #e5e7eb ${degrees}deg)`;
+
+      // Atualizar estilo dos itens
+      checkboxes.forEach((checkbox, index) => {
+        const item = checkbox.closest('.checklist-item');
+        updateItemStyle(item, checkbox.checked);
+      });
+    }
+
+    function limparChecklist() {
+      checklistItems.forEach((_, index) => {
+        const checkbox = document.getElementById(`check${index}`);
+        checkbox.checked = false;
+      });
       updateProgress();
+      hideAlerts();
+    }
+
+    function hideAlerts() {
+      document.getElementById('successAlert').style.display = 'none';
+      document.getElementById('errorAlert').style.display = 'none';
+    }
+
+    function showLoading(show) {
+      document.getElementById('loading').style.display = show ? 'block' : 'none';
+    }
+
+    function showAlert(type, show = true) {
+      const alertElement = document.getElementById(type + 'Alert');
+      alertElement.style.display = show ? 'block' : 'none';
     }
 
     function enviarChecklist() {
-      const respostas = [];
-      for (let i = 0; i < items.length; i++) {
-        respostas.push(document.getElementById('check' + i).checked);
-      }
-
-      const analista = document.getElementById('inputAnalista').value.trim();
-      const ticket = document.getElementById('inputTicket').value.trim();
+      const analista = document.getElementById('analista').value.trim();
+      const ticket = document.getElementById('ticket').value.trim();
 
       if (!analista || !ticket) {
-        alert("Por favor, preencha todos os campos do formulário.");
+        alert("⚠️ Por favor, preencha o nome do analista e o ticket de atendimento.");
         return;
       }
+
+      const respostas = checklistItems.map((_, index) => 
+        document.getElementById(`check${index}`).checked
+      );
+
+      const checkedCount = respostas.filter(Boolean).length;
+      if (checkedCount === 0) {
+        alert("⚠️ Por favor, marque pelo menos um item do checklist.");
+        return;
+      }
+
+      hideAlerts();
+      showLoading(true);
+
+      // Desabilitar botão durante envio
+      const submitBtn = document.querySelector('.btn-submit');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '⏳ Enviando...';
+
+      const segredo = "chave-super-secreta";
+      const token = btoa(segredo + ticket + analista);
 
       const payload = {
         analista: analista,
         ticket: ticket,
-        respostas: respostas
+        respostas: respostas,
+        token: token,
+        timestamp: new Date().toLocaleString('pt-BR'),
+        totalItens: checklistItems.length,
+        itensCompletos: checkedCount,
+        percentual: Math.round((checkedCount / checklistItems.length) * 100)
       };
 
       fetch("https://script.google.com/macros/s/AKfycbxI-sEYNww18bpcpFWJR23l7lCW31XSIQ4SV6PXJIEy-gQwTY4N3j3vMAxRgpcwsFk/exec", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json" }
       })
-      .then(response => response.json())
+      .then(res => res.json())
       .then(data => {
-        alert("Checklist enviado com sucesso!");
-        console.log(data);
+        showLoading(false);
+        
+        if (data.status === 'success' || data.status === 'sucesso') {
+          showAlert('success');
+          setTimeout(() => {
+            limparChecklist();
+            document.getElementById('analista').value = '';
+            document.getElementById('ticket').value = '';
+          }, 2000);
+        } else {
+          showAlert('error');
+          console.error('Erro do servidor:', data.message);
+        }
       })
       .catch(error => {
-        alert("Erro ao enviar checklist.");
-        console.error(error);
+        showLoading(false);
+        showAlert('error');
+        console.error('Erro de conexão:', error);
+      })
+      .finally(() => {
+        // Reabilitar botão
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '📤 Enviar Checklist';
       });
     }
-  </script>
 
+    // Inicializar progresso
+    updateProgress();
+
+    // Adicionar eventos de teclado para melhor UX
+    document.getElementById('analista').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        document.getElementById('ticket').focus();
+      }
+    });
+
+    document.getElementById('ticket').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        enviarChecklist();
+      }
+    });
+  </script>
 </body>
 </html>
