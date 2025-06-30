@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Checklist de Atendimento - Pay</title>
+  <style>
+    body {
+      font-family: Poppins, sans-serif;
+      margin: 0;
+      padding: 30px;
+      background-color: #1E3A8A;
+      color: #fff;
+    }
+
+    h1 {
+      text-align: center;
+      color: #E0E7FF;
+      margin-bottom: 20px;
+    }
+
+    .progress-container {
+      width: 100%;
+      background-color: #ccc;
+      border-radius: 20px;
+      margin: 0 auto 30px auto;
+      max-width: 700px;
+    }
+
+    .progress-bar {
+      height: 24px;
+      width: 0;
+      background-color: #60A5FA;
+      text-align: center;
+      color: white;
+      line-height: 24px;
+      border-radius: 20px;
+      transition: width 0.3s;
+    }
+
+    .checklist {
+      max-width: 700px;
+      margin: auto;
+    }
+
+    .item {
+      background: #fff;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      color: #333;
+    }
+
+    input[type="checkbox"] {
+      transform: scale(1.2);
+      margin-right: 10px;
+    }
+
+    .button-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    button {
+      background-color: #60A5FA;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    button:hover {
+      background-color: #3B82F6;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Checklist Pay - Chat</h1>
+
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar">0%</div>
+  </div>
+
+  <div class="checklist" id="checklist">
+    <!-- Itens serão inseridos via JavaScript -->
+  </div>
+
+  <div class="button-container">
+    <button onclick="clearChecklist()">Limpar Checklist</button>
+    <button onclick="enviarChecklist()">Enviar Checklist</button>
+  </div>
+
+  <script>
+    const items = [
+      "Atender o cliente em até 20 segundos",
+      "Dar boas vindas ao cliente usando mensagem padrão",
+      "Analise dos registros anteriores para identificar se cliente já fez sua solicitação",
+      "Realizar a confirmação positiva avaliando o histórico da interação: caso as informações já tenham sido fornecidas ao Bot ou em outras jornadas, não solicitar novamente. Se não houver registro, solicitar os 3 primeiros dígitos do CPF e o nome completo do cliente.",
+      "Identificar e analisar o cadastro do cliente",
+      "Confirme o endereço do imóvel sobre o qual o cliente quer falar",
+      "Retorne com o cliente de tempos em tempos para manter a atualização, ficando sem retornar no máximo até 2 minutos",
+      "Nos casos em que a solicitação do cliente puder ser atendida via app ou site QuintoAndar, direcionar o cliente ao APP ou site e orientá-lo com base no processo",
+      "Identificada a necessidade de transferência para outra jornada, utilize a calculadora disponibilizada na Base de Conhecimento",
+      "Realize o tagueamento para 100% dos contatos",
+      "Ao retornar para o cliente, agradeça por ter aguardado e recapitule o atendimento",
+      "Demonstre cordialidade e interesse em atender o cliente, realizando o procedimento corretamente",
+      "Nos casos de negociação de boleto, é necessário garantir que o atendimento seja realizado diretamente, sem encaminhamento para a parceira, exceto nas situações previstas em processo, como nas filas onde há orientação formal para envio à assessoria",
+      "Se atente nas escolhas das palavras ao digitar buscando garantir um atendimento humano e acolhedor",
+      "Garanta o registro no CRM de 100% dos contatos",
+      "Ao final da tratativa, realize um breve resumo dos pontos tratados na ligação e questione se o cliente possui alguma dúvida e se pode ajudar em algo mais.",
+      "Oferte a pesquisa em 100% dos atendimentos"
+    ];
+
+    const checklistContainer = document.getElementById('checklist');
+    const progressBar = document.getElementById('progressBar');
+
+    items.forEach((item, index) => {
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.innerHTML = `
+        <label>
+          <input type="checkbox" onchange="updateProgress()" id="check${index}"> ${item}
+        </label>
+      `;
+      checklistContainer.appendChild(div);
+    });
+
+    function updateProgress() {
+      const total = items.length;
+      let checked = 0;
+      for (let i = 0; i < total; i++) {
+        if (document.getElementById('check' + i).checked) {
+          checked++;
+        }
+      }
+      const percent = Math.round((checked / total) * 100);
+      progressBar.style.width = percent + '%';
+      progressBar.textContent = percent + '%';
+    }
+
+    function clearChecklist() {
+      for (let i = 0; i < items.length; i++) {
+        document.getElementById('check' + i).checked = false;
+      }
+      updateProgress();
+    }
+
+    function enviarChecklist() {
+      const respostas = [];
+      for (let i = 0; i < items.length; i++) {
+        respostas.push(document.getElementById('check' + i).checked);
+      }
+
+      const analista = prompt("Digite seu nome ou ID:");
+      const ticket = prompt("Digite o número do ticket de atendimento:");
+
+      if (!analista || !ticket) {
+        alert("Por favor, preencha o nome e o número do ticket.");
+        return;
+      }
+
+      const payload = {
+        analista: analista,
+        ticket: ticket,
+        respostas: respostas
+      };
+
+      fetch("https://script.google.com/macros/s/SEU_WEBAPP_URL/exec", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert("Checklist enviado com sucesso!");
+        console.log(data);
+      })
+      .catch(error => {
+        alert("Erro ao enviar checklist.");
+        console.error(error);
+      });
+    }
+  </script>
+
+</body>
+</html>
