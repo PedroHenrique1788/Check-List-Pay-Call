@@ -575,15 +575,27 @@
 
 
       
-      fetch(endpoint, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-      alert("✅ Enviado para a planilha com sucesso!");
+  fetch(endpoint, {
+  method: 'POST',
+  mode: 'no-cors',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(payload)
+})
+.then(() => {
+  showLoading(false);
+  showAlert('success');
+  submitBtn.disabled = false;
+  submitBtn.innerHTML = '📤 Enviar Checklist';
+})
+.catch((error) => {
+  console.error('Erro ao enviar:', error);
+  showLoading(false);
+  showAlert('error');
+  submitBtn.disabled = false;
+  submitBtn.innerHTML = '📤 Enviar Checklist';
+});
     }
     
 
