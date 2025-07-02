@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Checklist de Atendimento - Pay - Call</title>
+  <title>Checklist de Atendimento - Pay</title>
   <style>
     * {
       margin: 0;
@@ -66,7 +66,7 @@
       font-size: 1.1em;
     }
 
-    .form-group input {
+    .form-group input, .form-group select {
       width: 100%;
       padding: 15px 20px;
       border: 2px solid #e5e7eb;
@@ -76,11 +76,76 @@
       background: #f9fafb;
     }
 
-    .form-group input:focus {
+    .form-group input:focus, .form-group select:focus {
       outline: none;
       border-color: #3B82F6;
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
       background: white;
+    }
+
+    .tipo-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .tipo-option {
+      background: #f8fafc;
+      border: 3px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .tipo-option:hover {
+      background: #e0f2fe;
+      border-color: #3B82F6;
+      transform: translateY(-2px);
+    }
+
+    .tipo-option.active {
+      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+      border-color: #3B82F6;
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2);
+    }
+
+    .tipo-option.active::after {
+      content: '✓';
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: #3B82F6;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .tipo-icon {
+      font-size: 2em;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .tipo-title {
+      font-weight: 600;
+      font-size: 1.2em;
+      color: #374151;
+      margin-bottom: 5px;
+    }
+
+    .tipo-desc {
+      font-size: 0.9em;
+      color: #6b7280;
     }
 
     .checklist-section {
@@ -376,17 +441,37 @@
         width: 100%;
         max-width: 300px;
       }
+
+      .tipo-selector {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h1>💬 Checklist Pay - Call</h1>
+      <h1>💬 Checklist Pay</h1>
       <p>Sistema de verificação para atendimento ao cliente</p>
     </div>
 
     <div class="form-section">
+      <div class="form-group">
+        <label>🎯 Tipo de Atendimento:</label>
+        <div class="tipo-selector">
+          <div class="tipo-option active" data-tipo="call" onclick="selecionarTipo('call')">
+            <span class="tipo-icon">📞</span>
+            <div class="tipo-title">Call</div>
+            <div class="tipo-desc">Atendimento por telefone</div>
+          </div>
+          <div class="tipo-option" data-tipo="chat" onclick="selecionarTipo('chat')">
+            <span class="tipo-icon">💬</span>
+            <div class="tipo-title">Chat</div>
+            <div class="tipo-desc">Atendimento por chat</div>
+          </div>
+        </div>
+      </div>
+
       <div class="form-group">
         <label for="analista">👤 RE:</label>
         <input type="number" id="analista" placeholder="Digite seu RE" inputmode="numeric" pattern="[0-9]*">
@@ -401,7 +486,7 @@
     <div class="checklist-section">
       <div class="checklist-header">
         <div class="checklist-title">
-          📋 Checklist de Atendimento
+          📋 Checklist de Atendimento <span id="tipoAtual">(Call)</span>
         </div>
         <div class="progress-info">
           <div class="progress-circle" id="progressCircle">
@@ -432,14 +517,15 @@
   </div>
 
   <script>
-    const checklistItems = [
+    // Checklists para cada tipo de atendimento
+    const checklistCall = [
       "1 - Atender o cliente em até 20 segundos",
       "2 - Dar boas vindas ao cliente usando mensagem padrão",
       "3 - Analise dos registros anteriores para identificar se cliente já fez sua solicitação",
       "4 - Realizar a confirmação positiva avaliando o histórico da interação: caso as informações já tenham sido fornecidas ao Bot ou em outras jornadas, não solicitar novamente. Se não houver registro, solicitar os 3 primeiros dígitos do CPF e o nome completo do cliente.",
       "5 - Identificar e analisar o cadastro do cliente",
       "6 - Confirme o endereço do imóvel sobre o qual o cliente quer falar",
-      "7 - Retorne com o cliente de tempos  de tempos para manter a atualização, ficando sem retonar no maximo até 2 minutos",
+      "7 - Retorne com o cliente de tempos de tempos para manter a atualização, ficando sem retornar no máximo até 2 minutos",
       "8 - Nos casos em que a solicitação do cliente puder ser atendida via app ou site QuintoAndar, direcionar o cliente ao APP ou site e orienta-lo com base nos processo",
       "9 - Identificado a necessidade de transferencia para outra jornada, utilize a calculadora disponibilizada na Base de Conhecimento",
       "10 - Realize o tagueamento para 100% dos contatos",
@@ -448,35 +534,84 @@
       "13 - Nos casos de negociação de boleto, é necessário garantir que o atendimento seja realizado diretamente, sem encaminhamento para a parceira, exceto nas situações previstas em processo, como nas filas onde há orientação formal para envio à assessoria",
       "14 - Se atente nas escolhas das palavras ao digitar buscando garantir um atendimento humano e acolhedor",
       "15 - Garanta o registro no CRM de 100% dos contatos",
-      "16 - Ao final da tratativa relize um breve resumo dos pontos tratados na ligação e questione se o cliente possui alguma duvida e se pode ajudar em algo mais.",
-      "17 Oferte a pesquisa em 100% dos atendimentos",
+      "16 - Ao final da tratativa realize um breve resumo dos pontos tratados na ligação e questione se o cliente possui alguma dúvida e se pode ajudar em algo mais.",
+      "17 - Oferte a pesquisa em 100% dos atendimentos",
     ];
+
+    const checklistChat = [
+      "1 - Atender o cliente em até 05 segundos",
+      "2 - Dar boas vindas ao cliente usando mensagem padrão",
+      "3 - Use a fraseologia de call back",
+      "4 - Questione o motivo de contato para entender a real necessidade do cliente",
+      "5 - Realize a confirmação positiva solicitando 3 primeiros dígitos do CPF + Nome completo",
+      "6 - Identificar e analisar o cadastro do cliente",
+      "7 - Confirme o endereço do imóvel sobre o qual o cliente quer falar",
+      "8 - Nos casos em que a solicitação do cliente puder ser atendida via app ou site QuintoAndar, direcionar o cliente ao APP ou site e orienta-lo com base nos processo",
+      "9 - Identificado a necessidade de transferencia para outra jornada, utilize a calculadora disponibilizada na Base de Conhecimento",
+      "10 - Realize o tagueamento para 100% dos contatos",
+      "11 - Use o mute com consciência, durante analise no sistema, ou busca de informação o mute não deverá ser usado",
+      "12 - Retorne com o cliente de tempos de tempos para manter a atualização, ficando sem retornar no máximo até 3 minutos",
+      "13 - Ao retornar, agradeça e recapitule o atendimento",
+      "14 - Demonstre cordialidade e interesse em atender o cliente, realizando o procedimento corretamente",
+      "15 - Nos casos de negociação de boleto, é necessário garantir que o atendimento seja realizado diretamente, sem encaminhamento para a parceira, exceto nas situações previstas em processo, como nas filas onde há orientação formal para envio à assessoria.",
+      "16 - Garanta o registro no CRM de 100% dos contatos",
+      "17 - Ao final da tratativa realize um breve resumo dos pontos tratados na ligação e questione se o cliente possui alguma dúvida e se pode ajudar em algo mais.",
+      "18 - Oferte a pesquisa em 100% dos atendimentos",
+    ];
+
+    let tipoAtendimento = 'call'; // Padrão é Call
+    let checklistAtual = checklistCall;
 
     const checklistContainer = document.getElementById('checklist');
 
-    // Criar itens do checklist
-    checklistItems.forEach((item, index) => {
-      const div = document.createElement('div');
-      div.className = 'checklist-item';
-      div.innerHTML = `
-        <label>
-          <input type="checkbox" id="check${index}" onchange="updateProgress()">
-          <span>${item}</span>
-        </label>
-      `;
+    function selecionarTipo(tipo) {
+      tipoAtendimento = tipo;
       
-      // Adicionar evento de clique no div
-      div.addEventListener('click', function(e) {
-        if (e.target.type !== 'checkbox') {
-          const checkbox = this.querySelector('input[type="checkbox"]');
-          checkbox.checked = !checkbox.checked;
-          updateProgress();
-          updateItemStyle(this, checkbox.checked);
-        }
+      // Atualizar visual dos botões
+      document.querySelectorAll('.tipo-option').forEach(option => {
+        option.classList.remove('active');
       });
+      document.querySelector(`[data-tipo="${tipo}"]`).classList.add('active');
       
-      checklistContainer.appendChild(div);
-    });
+      // Atualizar checklist
+      checklistAtual = tipo === 'call' ? checklistCall : checklistChat;
+      document.getElementById('tipoAtual').textContent = `(${tipo === 'call' ? 'Call' : 'Chat'})`;
+      
+      // Recriar checklist
+      criarChecklist();
+      
+      // Atualizar contadores
+      document.getElementById('totalCount').textContent = checklistAtual.length;
+      document.getElementById('remainingCount').textContent = checklistAtual.length;
+      updateProgress();
+    }
+
+    function criarChecklist() {
+      checklistContainer.innerHTML = '';
+      
+      checklistAtual.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'checklist-item';
+        div.innerHTML = `
+          <label>
+            <input type="checkbox" id="check${index}" onchange="updateProgress()">
+            <span>${item}</span>
+          </label>
+        `;
+        
+        // Adicionar evento de clique no div
+        div.addEventListener('click', function(e) {
+          if (e.target.type !== 'checkbox') {
+            const checkbox = this.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            updateProgress();
+            updateItemStyle(this, checkbox.checked);
+          }
+        });
+        
+        checklistContainer.appendChild(div);
+      });
+    }
 
     function updateItemStyle(item, checked) {
       if (checked) {
@@ -490,7 +625,7 @@
       const checkboxes = document.querySelectorAll('input[type="checkbox"]');
       const checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
       const totalCount = checkboxes.length;
-      const percentage = Math.round((checkedCount / totalCount) * 100);
+      const percentage = totalCount > 0 ? Math.round((checkedCount / totalCount) * 100) : 0;
 
       // Atualizar elementos visuais
       document.getElementById('progressText').textContent = percentage + '%';
@@ -499,7 +634,7 @@
 
       // Atualizar círculo de progresso
       const progressCircle = document.getElementById('progressCircle');
-      const degrees = (checkedCount / totalCount) * 360;
+      const degrees = totalCount > 0 ? (checkedCount / totalCount) * 360 : 0;
       progressCircle.style.background = `conic-gradient(#10b981 ${degrees}deg, #e5e7eb ${degrees}deg)`;
 
       // Atualizar estilo dos itens
@@ -519,7 +654,7 @@
       });
     
       // Limpar os campos de texto
-      const textInputs = document.querySelectorAll('input[type="text"]');
+      const textInputs = document.querySelectorAll('input[type="text"], input[type="number"]');
       textInputs.forEach(input => {
         input.value = '';
       });
@@ -528,7 +663,6 @@
       updateProgress();
       hideAlerts();
     }
-
 
     function hideAlerts() {
       document.getElementById('successAlert').style.display = 'none';
@@ -543,7 +677,9 @@
       const alertElement = document.getElementById(type + 'Alert');
       alertElement.style.display = show ? 'block' : 'none';
     }
+
     const endpoint = 'https://script.google.com/macros/s/AKfycbxuOa0toU5tsnJKwy4em95ixPNKnqKyxN5bA5szBLQI_d7rMj3WnTuZv3SdK1gRxUFu/exec';
+
     function enviarChecklist() {
       const analista = document.getElementById('analista').value.trim();
       const ticket = document.getElementById('ticket').value.trim();
@@ -553,7 +689,7 @@
         return;
       }
 
-      const respostas = checklistItems.map((_, index) => 
+      const respostas = checklistAtual.map((_, index) => 
         document.getElementById(`check${index}`).checked
       );
 
@@ -577,41 +713,40 @@
       const payload = {
         analista: analista,
         ticket: ticket,
+        tipoAtendimento: tipoAtendimento, // Novo campo
         respostas: respostas,
         token: token,
         timestamp: new Date().toLocaleString('pt-BR'),
-        totalItens: checklistItems.length,
+        totalItens: checklistAtual.length,
         itensCompletos: checkedCount,
-        percentual: Math.round((checkedCount / checklistItems.length) * 100)
+        percentual: Math.round((checkedCount / checklistAtual.length) * 100)
       };
 
-
-      
-  fetch(endpoint, {
-  method: 'POST',
-  mode: 'no-cors',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify(payload)
-})
-.then(() => {
-  showLoading(false);
-  showAlert('success');
-  submitBtn.disabled = false;
-  submitBtn.innerHTML = '📤 Enviar Checklist';
-})
-.catch((error) => {
-  console.error('Erro ao enviar:', error);
-  showLoading(false);
-  showAlert('error');
-  submitBtn.disabled = false;
-  submitBtn.innerHTML = '📤 Enviar Checklist';
-});
+      fetch(endpoint, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        showLoading(false);
+        showAlert('success');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '📤 Enviar Checklist';
+      })
+      .catch((error) => {
+        console.error('Erro ao enviar:', error);
+        showLoading(false);
+        showAlert('error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '📤 Enviar Checklist';
+      });
     }
-    
 
-    // Inicializar progresso
+    // Inicializar
+    criarChecklist();
     updateProgress();
 
     // Adicionar eventos de teclado para melhor UX
